@@ -64,11 +64,11 @@ async function addWaterbody(sourceData,name){
     catchmentLayer.bindPopup(function (layer) {
         let uri = layer.feature.properties.uri;
         let pop = `<div class="card">
-        <div class="card-title"><h6>${layer.feature.properties.name} <span class="badge text-bg-secondary">${name}</span></h6></div>		
+        <div class="card-title"><h6>${layer.feature.properties.name} <a href="${lookup[name].url}" target="_blank"><span class="badge text-bg-secondary">${name}</span></a></h6></div>		
         <ul class="list-group list-group-flush">
-        <li class="list-group-item"><a href="${uri.replace("/so/","/")}" target="_blank">EA details</a></li>
-        <li class="list-group-item"><a href="${lookup[name].url}" target="_blank">Catchment partnership</a></li>
-        <!--<li class="list-group-item"><a class="button" onclick="showClassifications('${layer.feature.properties.id}')">Classifications</a></li>
+        <li class="list-group-item"><a class="button" href="${uri.replace("/so/","/")}" target="_blank">Environment Agency info</a></li>
+        <!--<li class="list-group-item"><a href="${lookup[name].url}" target="_blank">Catchment partnership</a></li>
+        <li class="list-group-item"><a class="button" onclick="showClassifications('${layer.feature.properties.id}')">Classifications</a></li>
         <li class="list-group-item"><a class="button" onclick="showObjectives('${layer.feature.properties.id}')">Objectives</a></li>
         <li class="list-group-item"><a class="button" onclick="showProtectedAreas('${layer.feature.properties.id}')">Protected</a></li>
         <li class="list-group-item"><a class="button" onclick="showChallenges('${layer.feature.properties.id}')">Challenges</a></li>-->
@@ -84,8 +84,8 @@ async function addWaterbody(sourceData,name){
 var server = "https://script.google.com/macros/s/AKfycbzplxYBoOcR9IPskJHrtIEs8TnLtX8iAPibQAVaQCOJNScwAtYz51HHiu8Uhwb7XSy54g/exec";
 var lookup = {
     "UBOCP":{name:"Upper Bedford Ouse Catchment Partnership",url:"https://ubocp.org.uk/",color:"rgb(150, 150, 150)"},
-    "CamEO":{name:"Cambridge Ely Ouse",url:"https://www.cameopartnership.org/",color:"rgb(100, 150, 150)"},
-    "WCP":{name:"Water Care Partnership",url:"https://www.cambsacre.org.uk/water-care-catchment-partnership/",color:"rgb(0, 150, 150)"}	
+    "CamEO":{name:"Cambridge Ely Ouse",url:"https://www.cameopartnership.org/",color:"rgb(125, 200, 150)"},
+    "WCP":{name:"Water Care Partnership",url:"https://www.cambsacre.org.uk/water-care-catchment-partnership/",color:"rgb(1, 100, 100)"}	
 }
 
 function loadMap(){
