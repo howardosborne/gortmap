@@ -1,7 +1,6 @@
 async function getFloodData(sourceData){
     //http://environment.data.gov.uk/flood-monitoring/id/stations?parameter=rainfall&lat=51.48&long=-2.77&dist=10
-  
-  }
+}
 async function showChallenges(waterbody){
     let url = `${server}?waterbody=${waterbody}&list=rnags`;
     const response = await fetch(url);
