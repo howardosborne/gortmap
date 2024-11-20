@@ -58,7 +58,7 @@ async function addWaterbody(sourceData,name){
     let catchmentLayer = L.geoJSON(data, {
         style: function (feature) {
             if(feature.geometry.type=="MultiLineString"){return {color: "rgb(100, 150, 250)"};}
-            else{return {color: lookup[name].color};}
+            else{return {color: lookup[name].color, weight:1};}
         }
     })
     catchmentLayer.bindPopup(function (layer) {
