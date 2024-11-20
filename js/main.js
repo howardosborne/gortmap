@@ -88,8 +88,8 @@ function loadMap(){
     var geo;
     const map = L.map('map').setView([52.3322, -0.2773], 9);
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19,	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
-    addWaterbody(`/data/ubocp.geojson`,"UBOCP");
-    addWaterbody(`/data/cameo.geojson`,"CamEO");
-    addWaterbody(`/data/wcp.geojson`,"WCP");
+    addWaterbody(`./data/ubocp.geojson`,"UBOCP");
+    addWaterbody(`./data/cameo.geojson`,"CamEO");
+    addWaterbody(`./data/wcp.geojson`,"WCP");
     //map.fitBounds(geo.getBounds());
 }
