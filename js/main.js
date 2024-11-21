@@ -1,6 +1,57 @@
 var map;
 var layerControl;
 
+async function getLatestCSOInfo() {
+    let url = "https://script.google.com/macros/s/AKfycbx5I8sChfkuxusDl29yafXamEAXGGU9AyLp-RS_LY8tcg6ZvBOr5G3rKsor0WfvOkipzw/exec"
+    const response = await fetch(url);
+    if(response.status == 200){
+        var CSOs = new L.LayerGroup();
+        var dischargingCSOs = new L.LayerGroup();
+        var offlineCSOs = new L.LayerGroup();
+        var inMaintenanceCSOs = new L.LayerGroup();
+        var CSOsCount = 0, dischargingCSOsCount = 0, offlineCSOsCount = 0, inMaintenanceCSOsCount = 0;
+        const responseJson = await response.json();
+        let result = responseJson["result"];
+        CSOsCount = result.length;
+        result.forEach(element => {
+            let csoColor = "rgb(50, 100, 0)";
+            if(element.is_discharging){csoColor =  "rgb(100, 50, 0)";}
+            let marker = L.circleMarker([element.cooridinate.lat, element.cooridinate.lng],{radius:4,color:csoColor});
+            marker.bindTooltip(decodeURI(element.site_name));
+            marker.properties = element;
+            //marker.addEventListener('click', _starterMarkerOnClick);
+            marker.addTo(CSOs);
+            let badge = "";
+            if(!element.is_online){
+                offlineCSOsCount ++;
+                marker.addTo(offlineCSOs);
+                badge += ` <span class="badge text-bg-warning">offline</span>`;
+            }
+            if(element.is_in_maintenance){
+                inMaintenanceCSOsCount ++;
+                marker.addTo(inMaintenanceCSOs);
+                badge += ` <span class="badge text-bg-warning">in maintenance</span>`;
+            }
+            if(element.is_discharging){
+                dischargingCSOsCount ++;
+                marker.addTo(dischargingCSOs);
+                marker.bindPopup(`<div class="card">
+                    <h6>${element.site_name}${badge}</h6>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item">Started: ${element.recent_discharge.started}</li>
+                <li class="list-group-item">Duration: ${element.recent_discharge.duration_mins} mins</li>
+                <li class="list-group-item">Discharge to: ${element.receiving_water_or_environment}</li>
+			    <li class="list-group-item">Is overflow expected?: ${element.is_overflow_expected}</li>
+                </ul>
+                </div>`);
+            } 
+        });
+        layerControl.addOverlay(CSOs, `All Anglian CSOs (${CSOsCount})`);
+        layerControl.addOverlay(dischargingCSOs, `CSOs discharging (${dischargingCSOsCount})`);
+        layerControl.addOverlay(offlineCSOs, `CSOs offline (${offlineCSOsCount})`);
+        layerControl.addOverlay(inMaintenanceCSOs, `CSOs in maintenance (${inMaintenanceCSOsCount})`);
+    }
+}
 async function getFloodData(sourceData){
     //http://environment.data.gov.uk/flood-monitoring/id/stations?parameter=rainfall&lat=51.48&long=-2.77&dist=10
 }
@@ -97,6 +148,7 @@ function loadMap(){
     var img = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
     var top = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'});
     var rel = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri',maxZoom: 13});
+
     var baseMaps = {
         "OpenStreetMap":osm,
         "Satelite":img,
@@ -107,5 +159,6 @@ function loadMap(){
     addWaterbody(`./data/ubocp.geojson`,"UBOCP");
     addWaterbody(`./data/cameo.geojson`,"CamEO");
     addWaterbody(`./data/wcp.geojson`,"WCP");
+    getLatestCSOInfo()
     //map.fitBounds(geo.getBounds());
 }
