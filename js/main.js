@@ -1,6 +1,23 @@
 var map;
 var layerControl;
 
+function isMarkerInsidePolygon(marker, poly) {
+    var polyPoints = poly.getLatLngs();       
+    var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+
+    var inside = false;
+    for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+        var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+        var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+};
+
 async function getLatestCSOInfo() {
     let url = "https://script.google.com/macros/s/AKfycbx5I8sChfkuxusDl29yafXamEAXGGU9AyLp-RS_LY8tcg6ZvBOr5G3rKsor0WfvOkipzw/exec"
     const response = await fetch(url);
@@ -38,7 +55,7 @@ async function getLatestCSOInfo() {
                 marker.bindPopup(`<div class="card">
                     <h6>${element.site_name}${badge}</h6>
                 <ul class="list-group list-group-flush">
-                <li class="list-group-item">Started: ${element.recent_discharge.started.substring(0,10)} ${element.recent_discharge.started.substring(11,19)}</li>
+                <li class="list-group-item">Started: ${element.recent_discharge.started}}</li>
                 <li class="list-group-item">Duration: ${element.recent_discharge.duration_mins} mins</li>
                 <li class="list-group-item">Discharge to: ${element.receiving_water_or_environment}</li>
 			    <li class="list-group-item">Is overflow expected?: ${element.is_overflow_expected}</li>
@@ -50,7 +67,7 @@ async function getLatestCSOInfo() {
                 <div class="card">
                     <h6>${element.site_name}${badge}</h6>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Last discharge: ${element.recent_discharge.started.substring(0,10)} ${element.recent_discharge.started.substring(11,19)}</li>
+                        <li class="list-group-item">Last discharge: ${element.recent_discharge.started}</li>
                         <li class="list-group-item">Duration: ${element.recent_discharge.duration_mins} mins</li>
                     <li class="list-group-item">Discharges to: ${element.receiving_water_or_environment}</li>
                     </ul>
