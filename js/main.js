@@ -145,15 +145,16 @@ async function addWaterbody(sourceData,name){
         let pop = `<div class="card">
         <div class="card-title">
         <h5 class="card-title">${layer.feature.properties.name}</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">${name} <a href="${lookup[name].url}" target="_blank">website</a></h6>
-        <ul class="list-group list-group-flush">
+        <h6 class="card-subtitle mb-2 text-body-secondary"><a href="${lookup[name].url}" target="_blank" class="card-link">${name}</a></h6>
+        <a href="${uri.replace("/so/","/")}" target="_blank" class="card-link">Waterbody Details (EA)</a>
+        <!--<ul class="list-group list-group-flush">
         <li class="list-group-item"><a class="button" href="${uri.replace("/so/","/")}" target="_blank">Environment Agency info</a></li>
-        <!--<li class="list-group-item"><a href="${lookup[name].url}" target="_blank">Catchment partnership</a></li>
+        <li class="list-group-item"><a href="${lookup[name].url}" target="_blank">Catchment partnership</a></li>
         <li class="list-group-item"><a class="button" onclick="showClassifications('${layer.feature.properties.id}')">Classifications</a></li>
         <li class="list-group-item"><a class="button" onclick="showObjectives('${layer.feature.properties.id}')">Objectives</a></li>
         <li class="list-group-item"><a class="button" onclick="showProtectedAreas('${layer.feature.properties.id}')">Protected</a></li>
-        <li class="list-group-item"><a class="button" onclick="showChallenges('${layer.feature.properties.id}')">Challenges</a></li>-->
-        </ul>
+        <li class="list-group-item"><a class="button" onclick="showChallenges('${layer.feature.properties.id}')">Challenges</a></li>
+        </ul>-->
         </div>`;
         return pop;
     })
