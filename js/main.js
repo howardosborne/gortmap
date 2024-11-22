@@ -45,6 +45,17 @@ async function getLatestCSOInfo() {
                 </ul>
                 </div>`);
             } 
+            else{
+                marker.bindPopup(`
+                <div class="card">
+                    <h6>${element.site_name}${badge}</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Last discharge: ${element.recent_discharge.started}</li>
+                        <li class="list-group-item">Duration: ${element.recent_discharge.duration_mins} mins</li>
+                    <li class="list-group-item">Discharges to: ${element.receiving_water_or_environment}</li>
+                    </ul>
+                </div>`);                
+            }
         });
         layerControl.addOverlay(CSOs, `All Anglian CSOs (${CSOsCount})`);
         layerControl.addOverlay(dischargingCSOs, `CSOs discharging (${dischargingCSOsCount})`);
