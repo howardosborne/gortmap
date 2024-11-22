@@ -38,7 +38,7 @@ async function getLatestCSOInfo() {
                 marker.bindPopup(`<div class="card">
                     <h6>${element.site_name}${badge}</h6>
                 <ul class="list-group list-group-flush">
-                <li class="list-group-item">Started: ${element.recent_discharge.started}</li>
+                <li class="list-group-item">Started: ${element.recent_discharge.started.substring(0,10)} ${element.recent_discharge.started.substring(11,19)}</li>
                 <li class="list-group-item">Duration: ${element.recent_discharge.duration_mins} mins</li>
                 <li class="list-group-item">Discharge to: ${element.receiving_water_or_environment}</li>
 			    <li class="list-group-item">Is overflow expected?: ${element.is_overflow_expected}</li>
@@ -50,7 +50,7 @@ async function getLatestCSOInfo() {
                 <div class="card">
                     <h6>${element.site_name}${badge}</h6>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Last discharge: ${element.recent_discharge.started}</li>
+                        <li class="list-group-item">Last discharge: ${element.recent_discharge.started.substring(0,10)} ${element.recent_discharge.started.substring(11,19)}</li>
                         <li class="list-group-item">Duration: ${element.recent_discharge.duration_mins} mins</li>
                     <li class="list-group-item">Discharges to: ${element.receiving_water_or_environment}</li>
                     </ul>
