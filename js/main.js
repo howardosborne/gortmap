@@ -143,7 +143,9 @@ async function addWaterbody(sourceData,name){
     catchmentLayer.bindPopup(function (layer) {
         let uri = layer.feature.properties.uri;
         let pop = `<div class="card">
-        <div class="card-title"><h6>${layer.feature.properties.name} <a href="${lookup[name].url}" target="_blank"><span class="badge text-bg-secondary">${name}</span></a></h6></div>		
+        <div class="card-title">
+        <h5 class="card-title">${layer.feature.properties.name}</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">${name} <a href="${lookup[name].url}" target="_blank">website</a></h6>
         <ul class="list-group list-group-flush">
         <li class="list-group-item"><a class="button" href="${uri.replace("/so/","/")}" target="_blank">Environment Agency info</a></li>
         <!--<li class="list-group-item"><a href="${lookup[name].url}" target="_blank">Catchment partnership</a></li>
