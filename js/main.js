@@ -1,20 +1,20 @@
 var map;
 var layerControl;
-
-function isMarkerInsidePolygon(marker, poly) {
-    var polyPoints = poly.getLatLngs();       
-    var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
-
+var stations = {};
+var polys = [];
+function isMarkerInsidePolygon(marker) {
     var inside = false;
-    for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
-        var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
-        var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
-
-        var intersect = ((yi > y) != (yj > y))
-            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
-
+    polys.forEach(poly=>{
+        var polyPoints = poly.getLatLngs();       
+        var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+        for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+            var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+            var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+            var intersect = ((yi > y) != (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }    
+    })
     return inside;
 };
 
@@ -37,6 +37,11 @@ async function getLatestCSOInfo() {
             marker.bindTooltip(decodeURI(element.site_name));
             marker.properties = element;
             //marker.addEventListener('click', _starterMarkerOnClick);
+            //layer.eachLayer(function(memberLayer) {
+            //    if (memberLayer.contains(point.getLatLng())) {
+            //      console.log(memberLayer.feature.properties);
+            //    }
+            //  });
             marker.addTo(CSOs);
             let badge = "";
             if(!element.is_online){
@@ -80,9 +85,104 @@ async function getLatestCSOInfo() {
         layerControl.addOverlay(inMaintenanceCSOs, `CSOs in maintenance (${inMaintenanceCSOsCount})`);
     }
 }
-async function getFloodData(sourceData){
-    //http://environment.data.gov.uk/flood-monitoring/id/stations?parameter=rainfall&lat=51.48&long=-2.77&dist=10
+async function getRainfallData(){
+    let url = "https://check-for-flooding.service.gov.uk/api/rainfall.geojson"
+    const response = await fetch(url);
+    if(response.status == 200){
+        var rainfall = new L.LayerGroup();
+        var rainfallCount = 0;
+        const responseJson = await response.json();
+        let result = responseJson["features"];
+        rainfallCount = result.length;
+        result.forEach(element => {
+            try{
+            let rainfallColor = "rgb(20, 20, 20)";
+            let marker = L.circleMarker([element.geometry.coordinates[1],element.geometry.coordinates[0]],{radius:4,color:rainfallColor});
+            marker.bindTooltip(decodeURI(element.properties.station_name));
+            marker.properties = element;
+            //marker.addEventListener('click', _starterMarkerOnClick);
+            marker.addTo(rainfall);
+            let badge = "";
+            marker.bindPopup(`
+                <div class="card">
+                    <h6>${element.properties.station_name}${badge}</h6>
+                    <ul class="list-group list-group-flush">
+				        <li class="list-group-item">"value": ${element.properties.value}</li>
+				        <li class="list-group-item">"value_timestamp": ${element.properties.value_timestamp}</li>
+				        <li class="list-group-item">"day_total": ${element.properties.day_total}</li>
+				        <li class="list-group-item">"six_hr_total": ${element.properties.six_hr_total}</li>
+				        <li class="list-group-item">"one_hr_total": ${element.properties.one_hr_total}</li>
+                    </ul>
+                </div>`);
+            }
+            catch(err){
+                console.log(err.message);
+            }
+            });
+        layerControl.addOverlay(rainfall, `Rainfall (${rainfallCount})`);
+    }
+    
 }
+async function getStationData(){
+    //http://environment.data.gov.uk/flood-monitoring/id/stations?parameter=rainfall&lat=51.48&long=-2.77&dist=10
+    let url = "./data/stations.json"
+    const response = await fetch(url);
+    if(response.status == 200){
+        var stations = new L.LayerGroup();
+        var stationCount = 0;
+        const responseJson = await response.json();
+        let result = responseJson["items"];
+        result.forEach(element => {
+            if(["Cam and Ely Ouse (Including South Level)","Upper and Bedford Ouse","Old Bedford including the Middle Level"].includes(element.catchmentName) ){
+                let stationColor = "rgb(0, 0, 200)";
+                let marker = L.circleMarker([element.lat,element.long],{radius:4,color:stationColor});
+                marker.bindTooltip(decodeURI(element.label));
+                marker.properties = element;
+                marker.addEventListener('click', _stationMarkerOnClick);
+                marker.addTo(stations);
+                stationCount ++ ;
+                stations[element.label] = element;
+            }
+        });
+        layerControl.addOverlay(stations, `Water level monitoring: (${stationCount})`);
+    }
+    
+}
+
+function _stationMarkerOnClick(e){
+    let output = `<h6>${e.sourceTarget.properties.label}</h6>`;
+    
+    e.sourceTarget.properties.measures.forEach(measure =>{
+        output += `<ul class="list-group list-group-flush">
+        <li class="list-group-item">measure: ${measure.parameterName}</li>
+        <li class="list-group-item">period: ${measure.period}</li>
+        <li class="list-group-item">qualifier: ${measure.qualifier} </li>
+        <li class="list-group-item">unit: ${measure.unitName}</li>
+        </ul>`;
+    })
+    output += `<span id="${e.sourceTarget.properties.stationReference}"></span>`;
+    showStageScale(e.sourceTarget.properties.stationReference,e.sourceTarget.properties.stageScale)
+    document.getElementById("offcanvas-body").innerHTML	= output;
+    var myOffcanvas = document.getElementById('offcanvas');
+    var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+    bsOffcanvas.show();	    
+}
+async function showStageScale(id,url){
+    const response = await fetch(url);
+    if(response.status == 200){
+        const responseJson = await response.json();
+        let items = responseJson["items"];
+        document.getElementById(id).innerHTML = `<ul class="list-group list-group-flush">
+            <li class="list-group-item">scaleMax: ${items.scaleMax}</li>
+            <li class="list-group-item">typicalRangeHigh: ${items.typicalRangeHigh}</li>
+            <li class="list-group-item">typicalRangeLow: ${items.typicalRangeLow}</li>
+            <li class="list-group-item">recorded min: ${items.minOnRecord.value} (${items.minOnRecord.dateTime})</li>
+            <li class="list-group-item">max: ${items.maxOnRecord.value} (${items.maxOnRecord.dateTime})</li>
+            <li class="list-group-item">recent max: ${items.highestRecent.value} (${items.highestRecent.dateTime})</li>
+            </ul>`;
+    }    
+}
+
 async function showChallenges(waterbody){
     let url = `${server}?waterbody=${waterbody}&list=rnags`;
     const response = await fetch(url);
@@ -159,6 +259,7 @@ async function addWaterbody(sourceData,name){
         return pop;
     })
     //catchmentLayer.bindTooltip(lookup[name].name)
+    catchmentLayer.eachLayer(lay=> {polys.push(lay)});
     layerControl.addOverlay(catchmentLayer, lookup[name].name);
     catchmentLayer.addTo(map);
 }
@@ -190,6 +291,8 @@ function loadMap(){
     addWaterbody(`./data/ubocp.geojson`,"UBOCP");
     addWaterbody(`./data/cameo.geojson`,"CamEO");
     addWaterbody(`./data/wcp.geojson`,"WCP");
-    getLatestCSOInfo()
+    getLatestCSOInfo();
+    getStationData();
+    getRainfallData();
     //map.fitBounds(geo.getBounds());
 }
