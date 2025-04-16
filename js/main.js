@@ -17,12 +17,12 @@ function isMarkerInsidePolygon(marker) {
     })
     return inside;
 };
-/*
-async function getLatestCSOInfo() {
+
+async function getBetaCSOInfo() {
     let url = "https://script.google.com/macros/s/AKfycbx5I8sChfkuxusDl29yafXamEAXGGU9AyLp-RS_LY8tcg6ZvBOr5G3rKsor0WfvOkipzw/exec"
     const response = await fetch(url);
     if(response.status == 200){
-        var CSOs = new L.LayerGroup();
+        var betaCSOs = new L.LayerGroup();
         var dischargingCSOs = new L.LayerGroup();
         var offlineCSOs = new L.LayerGroup();
         var inMaintenanceCSOs = new L.LayerGroup();
@@ -42,7 +42,7 @@ async function getLatestCSOInfo() {
             //      console.log(memberLayer.feature.properties);
             //    }
             //  });
-            marker.addTo(CSOs);
+            marker.addTo(betaCSOs);
             let badge = "";
             if(!element.is_online){
                 offlineCSOsCount ++;
@@ -79,13 +79,12 @@ async function getLatestCSOInfo() {
                 </div>`);                
             }
         });
-        layerControl.addOverlay(CSOs, `All Anglian CSOs (${CSOsCount})`);
+        layerControl.addOverlay(betaCSOs, `Beta Anglian CSOs (${CSOsCount})`);
         layerControl.addOverlay(dischargingCSOs, `CSOs discharging (${dischargingCSOsCount})`);
         layerControl.addOverlay(offlineCSOs, `CSOs offline (${offlineCSOsCount})`);
         layerControl.addOverlay(inMaintenanceCSOs, `CSOs in maintenance (${inMaintenanceCSOsCount})`);
     }
 }
-*/
 
 async function getLatestCSOInfo() {
     let url = "https://services3.arcgis.com/VCOY1atHWVcDlvlJ/arcgis/rest/services/stream_service_outfall_locations_view/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
@@ -387,6 +386,7 @@ function loadMap(){
     addWaterbody(`./data/ubocp.geojson`,"UBOCP");
     addWaterbody(`./data/cameo.geojson`,"CamEO");
     addWaterbody(`./data/wcp.geojson`,"WCP");
+    getBetaCSOInfo();
     getLatestCSOInfo();
     getStationData();
     getRainfallData();
