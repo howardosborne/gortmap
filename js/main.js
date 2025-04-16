@@ -19,7 +19,7 @@ function isMarkerInsidePolygon(marker) {
 };
 
 async function getBetaCSOInfo() {
-    let url = "https://script.google.com/macros/s/AKfycbx5I8sChfkuxusDl29yafXamEAXGGU9AyLp-RS_LY8tcg6ZvBOr5G3rKsor0WfvOkipzw/exec"
+    let url = "https://script.google.com/macros/s/AKfycbxctfjlOvRaXiqO126Ckl4wH8btTuk-jtAz_9Dw6HNWz3Fcc1iKJyNAKPIR6REB_nrHVg/exec"
     const response = await fetch(url);
     if(response.status == 200){
         var betaCSOs = new L.LayerGroup();
