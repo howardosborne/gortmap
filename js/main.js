@@ -337,12 +337,12 @@ async function addWaterbody(sourceData,name){
     let catchmentLayer = L.geoJSON(data, {
         style: function (feature) {
             if(feature.geometry.type=="MultiLineString"){return {color: "rgb(100, 150, 250)"};}
-            else{return {color: lookup[name].color, weight:1};}
+            else{return {color: lookup[name].color, opacity: 0.25, weight:1};}
         }
     })
     catchmentLayer.bindTooltip(function (layer) {
         let uri = layer.feature.properties.uri;
-        let pop = `>${layer.feature.properties.name}
+        let pop = `${layer.feature.properties.name}
         <!--
         <a href="${uri.replace("/so/","/")}" target="_blank" class="card-link">EA details</a>
         <ul class="list-group list-group-flush">
