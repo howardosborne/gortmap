@@ -10,7 +10,9 @@
     width: 100%;
   }
 }
-
+path.leaflet-interactive{
+  outline: none;
+}
 .waterbody {color: rgb(100, 150, 250);}
 .wcp {color: rgb(150, 150, 150);}
 .cameo {color: rgb(125, 200, 150);}
