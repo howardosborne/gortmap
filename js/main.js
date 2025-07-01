@@ -165,7 +165,7 @@ async function getRainfallData(){
             let rainfallColor = "rgb(20, 20, 20)";
             let marker = L.circleMarker([element.geometry.coordinates[1],element.geometry.coordinates[0]],{radius:4,color:rainfallColor});
             marker.bindTooltip(decodeURI(element.properties.station_name));
-            marker.properties = element;
+            marker.properties = element.properties;
             marker.addEventListener('click', _rainfallMarkerOnClick);
             marker.addTo(rainfall);
             let badge = "";
